@@ -18,7 +18,7 @@ func TestYeetStatements(t *testing.T) {
 	p := New(l)
 
 	program := p.ParseProgram()
-	checkParseErrors(t, p)
+	checkParserErrors(t, p)
 	if program == nil {
 		t.Fatalf("ParseProgram() returned nil")
 	}
@@ -64,7 +64,34 @@ func testYeetStatement(t *testing.T, s ast.Statement, name string) bool {
 	return true
 }
 
-func checkParseErrors(t *testing.T, p *Parser) {
+func TestSlayStatements(t *testing.T) {
+	input := `
+		slay 5;
+		slay 10;
+		slay 993322;
+	`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	if len(program.Statements) != 3 {
+		t.Fatalf("program.Statements does not contain 3 statements. got=%d",
+			len(program.Statements))
+	}
+	for _, stmt := range program.Statements {
+		returnStmt, ok := stmt.(*ast.ReturnStatement)
+		if !ok {
+			t.Errorf("stmt not *ast.returnStatement. got=%T", stmt)
+			continue
+		}
+		if returnStmt.TokenLiteral() != "slay" {
+			t.Errorf("returnStmt.TokenLiteral not 'slay', got %q",
+				returnStmt.TokenLiteral())
+		}
+	}
+}
+
+func checkParserErrors(t *testing.T, p *Parser) {
 	errors := p.Errors()
 
 	if len(errors) == 0 {
