@@ -2,10 +2,22 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/Jitesh117/brainrotLang-interpreter/ast"
 	"github.com/Jitesh117/brainrotLang-interpreter/lexer"
 	"github.com/Jitesh117/brainrotLang-interpreter/token"
+)
+
+const (
+	_ int = iota
+	LOWEST
+	EQUALS      // ==
+	LESSGREATER // < or <
+	SUM         // +
+	PRODUCT     // *
+	PREFIX      // -X or !X
+	CALL        // myFunction(X)
 )
 
 type Parser struct {
@@ -14,11 +26,17 @@ type Parser struct {
 	errors    []string
 	curToken  token.Token
 	peekToken token.Token
+
+	prefixParseFns map[token.TokenType]prefixParseFn
+	infixParseFns  map[token.TokenType]infixParseFn
 }
 
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l, errors: []string{}}
 
+	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	// Read two tokens, so curToken and peekToken are both set
 
 	p.nextToken()
@@ -43,7 +61,9 @@ func (p *Parser) nextToken() {
 }
 
 func (p *Parser) ParseProgram() *ast.Program {
-	program := &ast.Program{}
+	program := &ast.Program{} // constructs the root node of the AST
+
+	// build the child nodes, i.e. the "statements"
 	program.Statements = []ast.Statement{}
 	for p.curToken.Type != token.EOF {
 		stmt := p.parseStatement()
@@ -55,6 +75,18 @@ func (p *Parser) ParseProgram() *ast.Program {
 	return program
 }
 
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+}
+
+func (p *Parser) registerPrefix(tokenTpye token.TokenType, fn prefixParseFn) {
+	p.prefixParseFns[tokenTpye] = fn
+}
+
+func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
+	p.infixParseFns[tokenType] = fn
+}
+
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.LET:
@@ -62,12 +94,12 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseSlayStatement()
 	default:
-		return nil
+		return p.parseExpressionStatement()
 	}
 }
 
-func (p *Parser) parseYeetStatement() *ast.LetStatement {
-	stmt := &ast.LetStatement{Token: p.curToken}
+func (p *Parser) parseYeetStatement() *ast.YeetStatement {
+	stmt := &ast.YeetStatement{Token: p.curToken}
 	if !p.expectPeek(token.IDENT) {
 		return nil
 	}
@@ -101,8 +133,8 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	}
 }
 
-func (p *Parser) parseSlayStatement() *ast.ReturnStatement {
-	stmt := &ast.ReturnStatement{Token: p.curToken}
+func (p *Parser) parseSlayStatement() *ast.SlayStatement {
+	stmt := &ast.SlayStatement{Token: p.curToken}
 	p.nextToken()
 	// TODO: We're skipping the expressions until we
 	// encounter a semicolon
@@ -111,3 +143,44 @@ func (p *Parser) parseSlayStatement() *ast.ReturnStatement {
 	}
 	return stmt
 }
+
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	stmt := &ast.ExpressionStatement{Token: p.curToken}
+
+	stmt.Expression = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+	return stmt
+}
+
+func (p *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := p.prefixParseFns[p.curToken.Type]
+	if prefix == nil {
+		return nil
+	}
+	leftExp := prefix()
+
+	return leftExp
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	lit := &ast.IntegerLiteral{Token: p.curToken}
+
+	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as IntegerLiteral", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+
+	lit.Value = value
+
+	return lit
+}
+
+type (
+	prefixParseFn func() ast.Expression
+	infixParseFn  func(ast.Expression) ast.Expression
+)
