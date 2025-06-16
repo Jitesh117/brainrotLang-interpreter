@@ -50,11 +50,11 @@ func testYeetStatement(t *testing.T, s ast.Statement, name string) bool {
 
 	yeetStmt, ok := s.(*ast.YeetStatement)
 	if !ok {
-		t.Errorf("s not *ast.LetStatement. got=%T", s)
+		t.Errorf("s not *ast.YeetStatement. got=%T", s)
 		return false
 	}
 	if yeetStmt.Name.Value != name {
-		t.Errorf("letStmt.Name.Value not '%s'. got=%s", name, yeetStmt.Name.Value)
+		t.Errorf("yeetStmt.Name.Value not '%s'. got=%s", name, yeetStmt.Name.Value)
 		return false
 	}
 	if yeetStmt.Name.TokenLiteral() != name {
@@ -86,15 +86,15 @@ func TestSlayStatements(t *testing.T) {
 		}
 
 		stmt := program.Statements[0]
-		returnStmt, ok := stmt.(*ast.SlayStatement)
+		slayStmt, ok := stmt.(*ast.SlayStatement)
 		if !ok {
 			t.Fatalf("stmt not *ast.returnStatement. got=%T", stmt)
 		}
-		if returnStmt.TokenLiteral() != "slay" {
-			t.Fatalf("returnStmt.TokenLiteral not 'return', got %q",
-				returnStmt.TokenLiteral())
+		if slayStmt.TokenLiteral() != "slay" {
+			t.Fatalf("slayStmt.TokenLiteral not 'return', got %q",
+				slayStmt.TokenLiteral())
 		}
-		if testLiteralExpression(t, returnStmt.Slayvalue, tt.expectedValue) {
+		if testLiteralExpression(t, slayStmt.SlayValue, tt.expectedValue) {
 			return
 		}
 	}
@@ -553,7 +553,7 @@ func TestIfExpression(t *testing.T) {
 			program.Statements[0])
 	}
 
-	exp, ok := stmt.Expression.(*ast.IfExpression)
+	exp, ok := stmt.Expression.(*ast.FrExpression)
 	if !ok {
 		t.Fatalf("stmt.Expression is not ast.IfExpression. got=%T",
 			stmt.Expression)
@@ -602,7 +602,7 @@ func TestIfElseExpression(t *testing.T) {
 			program.Statements[0])
 	}
 
-	exp, ok := stmt.Expression.(*ast.IfExpression)
+	exp, ok := stmt.Expression.(*ast.FrExpression)
 	if !ok {
 		t.Fatalf("stmt.Expression is not ast.IfExpression. got=%T", stmt.Expression)
 	}
@@ -666,7 +666,7 @@ func TestFunctionLiteralParsing(t *testing.T) {
 		)
 	}
 
-	function, ok := stmt.Expression.(*ast.FunctionLiteral)
+	function, ok := stmt.Expression.(*ast.VibeLiteral)
 	if !ok {
 		t.Fatalf("stmt.Expression is not ast.FunctionLiteral. got=%T", stmt.Expression)
 	}
@@ -706,7 +706,7 @@ func TestFunctionParameterParsing(t *testing.T) {
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 		stmt := program.Statements[0].(*ast.ExpressionStatement)
-		function := stmt.Expression.(*ast.FunctionLiteral)
+		function := stmt.Expression.(*ast.VibeLiteral)
 		if len(function.Parameters) != len(tt.expectedParams) {
 			t.Errorf(
 				"length parameters wrong. want %d, got=%d\n",

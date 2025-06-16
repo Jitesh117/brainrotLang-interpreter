@@ -103,7 +103,7 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 }
 
 func (p *Parser) parseFunctionLiteral() ast.Expression {
-	lit := &ast.FunctionLiteral{Token: p.curToken}
+	lit := &ast.VibeLiteral{Token: p.curToken}
 
 	if !p.expectPeek(token.LPAREN) {
 		return nil
@@ -277,7 +277,7 @@ func (p *Parser) parseSlayStatement() *ast.SlayStatement {
 	stmt := &ast.SlayStatement{Token: p.curToken}
 	p.nextToken()
 
-	stmt.Slayvalue = p.parseExpression(LOWEST)
+	stmt.SlayValue = p.parseExpression(LOWEST)
 	for p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
@@ -361,7 +361,7 @@ func (p *Parser) parseBoolean() ast.Expression {
 }
 
 func (p *Parser) parseIfExpression() ast.Expression {
-	expression := &ast.IfExpression{Token: p.curToken}
+	expression := &ast.FrExpression{Token: p.curToken}
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}

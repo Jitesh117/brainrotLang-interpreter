@@ -79,7 +79,7 @@ func (i *Identifier) String() string       { return i.Value }
 
 type SlayStatement struct {
 	Token     token.Token
-	Slayvalue Expression
+	SlayValue Expression
 }
 
 func (rs *SlayStatement) StatementNode()       {}
@@ -90,8 +90,8 @@ func (rs *SlayStatement) String() string {
 
 	out.WriteString(rs.TokenLiteral() + " ")
 
-	if rs.Slayvalue != nil {
-		out.WriteString(rs.Slayvalue.String())
+	if rs.SlayValue != nil {
+		out.WriteString(rs.SlayValue.String())
 	}
 
 	out.WriteString(";")
@@ -170,16 +170,16 @@ func (b *Boolean) expressionNode()      {}
 func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
 func (b *Boolean) String() string       { return b.Token.Literal }
 
-type IfExpression struct {
+type FrExpression struct {
 	Token       token.Token // the 'if' token
 	Condition   Expression
 	Consequence *BlockStatement
 	Alternative *BlockStatement
 }
 
-func (ie *IfExpression) expressionNode()      {}
-func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
-func (ie *IfExpression) String() string {
+func (ie *FrExpression) expressionNode()      {}
+func (ie *FrExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *FrExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("if")
@@ -211,15 +211,15 @@ func (bs *BlockStatement) String() string {
 	return out.String()
 }
 
-type FunctionLiteral struct {
+type VibeLiteral struct {
 	Token      token.Token // the 'vibe' token
 	Parameters []*Identifier
 	Body       *BlockStatement
 }
 
-func (fl *FunctionLiteral) expressionNode()      {}
-func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
-func (fl *FunctionLiteral) String() string {
+func (fl *VibeLiteral) expressionNode()      {}
+func (fl *VibeLiteral) TokenLiteral() string { return fl.Token.Literal }
+func (fl *VibeLiteral) String() string {
 	var out bytes.Buffer
 
 	params := []string{}
