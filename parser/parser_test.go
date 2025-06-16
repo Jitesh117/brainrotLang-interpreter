@@ -666,27 +666,27 @@ func TestFunctionLiteralParsing(t *testing.T) {
 		)
 	}
 
-	function, ok := stmt.Expression.(*ast.VibeLiteral)
+	vibe, ok := stmt.Expression.(*ast.VibeLiteral)
 	if !ok {
 		t.Fatalf("stmt.Expression is not ast.FunctionLiteral. got=%T", stmt.Expression)
 	}
 
-	if len(function.Parameters) != 2 {
-		t.Fatalf("function literal parameters wrong. wrong 2, got=%d\n", len(function.Parameters))
+	if len(vibe.Parameters) != 2 {
+		t.Fatalf("function literal parameters wrong. wrong 2, got=%d\n", len(vibe.Parameters))
 	}
 
-	testLiteralExpression(t, function.Parameters[0], "x")
-	testLiteralExpression(t, function.Parameters[1], "y")
-	if len(function.Body.Statements) != 1 {
+	testLiteralExpression(t, vibe.Parameters[0], "x")
+	testLiteralExpression(t, vibe.Parameters[1], "y")
+	if len(vibe.Body.Statements) != 1 {
 		t.Fatalf(
 			"function.Body.Statements has not 1 statements. got=%d\n",
-			len(function.Body.Statements),
+			len(vibe.Body.Statements),
 		)
 	}
-	bodyStmt, ok := function.Body.Statements[0].(*ast.ExpressionStatement)
+	bodyStmt, ok := vibe.Body.Statements[0].(*ast.ExpressionStatement)
 	if !ok {
 		t.Fatalf("function body stmt is not ast.ExpressionStatement. got=%T",
-			function.Body.Statements[0])
+			vibe.Body.Statements[0])
 	}
 	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
 }
@@ -756,4 +756,23 @@ func TestCallExpressionParsing(t *testing.T) {
 	testLiteralExpression(t, exp.Arguments[0], 1)
 	testInfixExpression(t, exp.Arguments[1], 2, "*", 3)
 	testInfixExpression(t, exp.Arguments[2], 4, "+", 5)
+}
+
+func TestStringLiteralExpression(t *testing.T) {
+	input := `"hello world";`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	literal, ok := stmt.Expression.(*ast.StringLiteral)
+	if !ok {
+		t.Fatalf("exp not *ast.StringLiteral. got=%T", stmt.Expression)
+	}
+
+	if literal.Value != "hello world" {
+		t.Errorf("literal.value not %q. got=%q", "hello world", literal.Value)
+	}
 }
