@@ -80,14 +80,16 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 }
 
 func applyVibe(vb object.Object, args []object.Object) object.Object {
-	vibe, ok := vb.(*object.Vibe)
-	if !ok {
-		return newError("not a vibe. %s", vb.Type())
+	switch vb := vb.(type) {
+	case *object.Vibe:
+		extendedEnv := extendVibeEnv(vb, args)
+		evaluated := Eval(vb.Body, extendedEnv)
+		return unwrapSlayvalue(evaluated)
+	case *object.Builtin:
+		return vb.Vb(args...)
+	default:
+		return newError("not a function: %s", vb.Type())
 	}
-
-	extendedEnv := extendVibeEnv(vibe, args)
-	evaluated := Eval(vibe.Body, extendedEnv)
-	return unwrapSlayvalue(evaluated)
 }
 
 func extendVibeEnv(vb *object.Vibe, args []object.Object) *object.Environment {
@@ -121,11 +123,14 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 }
 
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
-	val, ok := env.Get(node.Value)
-	if !ok {
-		return newError("identifier not found: " + node.Value)
+	if val, ok := env.Get(node.Value); ok {
+		return val
 	}
-	return val
+
+	if builtin, ok := builtins[node.Value]; ok {
+		return builtin
+	}
+	return newError("identifier not found: " + node.Value)
 }
 
 func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
