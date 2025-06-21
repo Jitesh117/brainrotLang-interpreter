@@ -186,27 +186,27 @@ func TestErrorHandling(t *testing.T) {
 	}{
 		{
 			"5 + based;",
-			"type mismatch: INTEGER + BOOLEAN",
+			"L + ratio + type mismatch: INTEGER + BOOLEAN",
 		},
 		{
 			"5 + based; 5;",
-			"type mismatch: INTEGER + BOOLEAN",
+			"L + ratio + type mismatch: INTEGER + BOOLEAN",
 		},
 		{
 			"-based",
-			"unknown operator: -BOOLEAN",
+			"we don't do that here. unknown operator: -BOOLEAN",
 		},
 		{
 			"based + cap;",
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"we don't do that here. unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
 			"5; based + cap; 5",
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"we don't do that here. unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
 			"fr (10 > 1) { based + based; }",
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"we don't do that here. unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
 			`
@@ -215,19 +215,19 @@ func TestErrorHandling(t *testing.T) {
 				}
 				slay 1;
 				}
-			`, "unknown operator: BOOLEAN + BOOLEAN",
+			`, "we don't do that here. unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
 			"foobar",
-			"identifier not found: foobar",
+			"bruh moment! identifier not found: foobar",
 		},
 		{
 			`"Hello" - "World"`,
-			"unknown operator: STRING - STRING",
+			"we don't do that here. unknown operator: STRING - STRING",
 		},
 		{
 			`{"name": "Monkey"}[vibe(x) { x }];`,
-			"unusable as hash key: FUNCTION",
+			"nah fam FUNCTION cannot be used as a hash key",
 		},
 	}
 	for _, tt := range tests {

@@ -104,7 +104,7 @@ func evalIndexExpression(left, index object.Object) object.Object {
 	case left.Type() == object.HASH_OBJ:
 		return evalHashIndexExpression(left, index)
 	default:
-		return newError("index operator not supported: %s", left.Type())
+		return newError("index operator deadass not supported: %s", left.Type())
 	}
 }
 
@@ -112,7 +112,7 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 	hashObject := hash.(*object.Hash)
 	key, ok := index.(object.Hashable)
 	if !ok {
-		return newError("unusable as hash key: %s", index.Type())
+		return newError("nah fam %s cannot be used as a hash key", index.Type())
 	}
 	pair, ok := hashObject.Pairs[key.HashKey()]
 	if !ok {
@@ -140,7 +140,7 @@ func applyVibe(vb object.Object, args []object.Object) object.Object {
 	case *object.Builtin:
 		return vb.Vb(args...)
 	default:
-		return newError("not a function: %s", vb.Type())
+		return newError("vibe mismatch fr: %s", vb.Type())
 	}
 }
 
@@ -182,7 +182,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	if builtin, ok := builtins[node.Value]; ok {
 		return builtin
 	}
-	return newError("identifier not found: " + node.Value)
+	return newError("bruh moment! identifier not found: " + node.Value)
 }
 
 func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
@@ -251,12 +251,12 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
 	case left.Type() != right.Type():
-		return newError("type mismatch: %s %s %s",
+		return newError("L + ratio + type mismatch: %s %s %s",
 			left.Type(), operator, right.Type())
 	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
 		return evalStringInfixExpression(operator, left, right)
 	default:
-		return newError("unknown operator: %s %s %s",
+		return newError("we don't do that here. unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
 	}
 }
@@ -288,7 +288,7 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
 	default:
-		return newError("unknown operator: %s%s", operator, right.Type())
+		return newError("we don't do that here. unknown operator: %s%s", operator, right.Type())
 	}
 }
 
@@ -307,7 +307,7 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.INTEGER_OBJ {
-		return newError("unknown operator: -%s", right.Type())
+		return newError("we don't do that here. unknown operator: -%s", right.Type())
 	}
 	value := right.(*object.Integer).Value
 	return &object.Integer{Value: -value}
@@ -336,13 +336,23 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 		return nativeBoolToBooleanObject((leftval != rightval))
 
 	default:
-		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+		return newError(
+			"we don't do that here. unknown operator: %s %s %s",
+			left.Type(),
+			operator,
+			right.Type(),
+		)
 	}
 }
 
 func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
 	if operator != "+" {
-		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+		return newError(
+			"we don't do that here. unknown operator: %s %s %s",
+			left.Type(),
+			operator,
+			right.Type(),
+		)
 	}
 
 	leftVal := left.(*object.String).Value
