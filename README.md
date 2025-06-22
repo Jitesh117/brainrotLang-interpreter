@@ -2,6 +2,8 @@
 
 A chaotic, meme-inspired programming language interpreter that turns Gen Z slang into executable code. Because why write `function` when you can write `vibe`?
 
+![Demo](demo.gif)
+
 ## 🔥 Features
 
 - **Full interpreter implementation** with lexer, parser, and evaluator
