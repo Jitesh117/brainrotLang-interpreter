@@ -88,7 +88,7 @@ slay person["rizzLevel"]; // returns 100
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/Jitesh117/brainrot-lsp.git
+git clone https://github.com/Jitesh117/brainrotLang-interpreter.git
 cd brainrot-lsp
 ```
 
@@ -102,12 +102,6 @@ go build -o brainrot ./cmd/main.go
 
 ```bash
 ./brainrot
-```
-
-4. Or execute a file:
-
-```bash
-./brainrot program.br
 ```
 
 ## 🏗️ Architecture
