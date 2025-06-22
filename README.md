@@ -92,16 +92,10 @@ git clone https://github.com/Jitesh117/brainrotLang-interpreter.git
 cd brainrot-lsp
 ```
 
-2. Build the interpreter:
+2. Run the REPL:
 
 ```bash
-go build -o brainrot ./cmd/main.go
-```
-
-3. Run the REPL:
-
-```bash
-./brainrot
+go run main.go
 ```
 
 ## 🏗️ Architecture
