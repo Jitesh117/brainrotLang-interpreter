@@ -186,7 +186,7 @@ Please feel free to open an issue or submit a pull request.
 - [ ] **Compiler**: Bytecode compilation for better performance
 - [ ] **LSP Integration**: Full Language Server Protocol support
 - [x] **Standard Library**: Built-in functions for common operations
-- [x] **Array Methods**: `.push()`, `.pop()`, `.length`, etc.
+- [x] **Array Methods**: `.first()`, `.last()`, `rizzLevel`, etc.
 
 ## 🙏 Acknowledgments
 
