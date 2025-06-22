@@ -89,7 +89,7 @@ slay person["rizzLevel"]; // returns 100
 
 ```bash
 git clone https://github.com/Jitesh117/brainrotLang-interpreter.git
-cd brainrot-lsp
+cd brainrotLang-interpreter/
 ```
 
 2. Run the REPL:
